@@ -1,25 +1,25 @@
 #
-#  libWiki - A Mediawiki client library.
+#  libMWiki - A Mediawiki client library.
 #
 #  Copyright (C) 2011, 2012 Hendrik Kunert kunerd@users.sourceforge.net
 #
-#  This file is part of libWiki.
+#  This file is part of libMWiki.
 #
-#  libWiki is free software: you can redistribute it and/or modify
+#  libMWiki is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
 #  the Free Software Foundation, either version 3 of the License, or
 #  (at your option) any later version.
 #
-#  libWiki is distributed in the hope that it will be useful,
+#  libMWiki is distributed in the hope that it will be useful,
 #  but WITHOUT ANY WARRANTY; without even the implied warranty of
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #  GNU General Public License for more details.
 #
 #  You should have received a copy of the GNU General Public License
-#  along with libWiki.  If not, see <http://www.gnu.org/licenses/>.
+#  along with libMWiki.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-project(libWiki C)
+project(libMWiki C)
 cmake_minimum_required(VERSION 2.6 FATAL_ERROR)
 
 include_directories(${PROJECT_SOURCE_DIR})
@@ -74,7 +74,7 @@ endif(DOXYGEN_FOUND)
 # used for linking into a shared library
 add_definitions(-fPIC)
 
-#add_library(libWiki STATIC libWiki.c ${SOURCE_FILES})
+#add_library(libMWiki STATIC libMWiki.c ${SOURCE_FILES})
 
 #target_link_libraries(
 #        wplookup
