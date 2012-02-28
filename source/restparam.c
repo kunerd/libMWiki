@@ -21,6 +21,17 @@
 
 #include "restparam.h"
 
+#include <stdlib.h>
+/**
+ * Creates a LwParameter with the given name and value. The returned object should be freed with lw_rest_free() when no longer needed.
+
+ * @param name name of the parameter
+ * @param value value of the parameter
+ * @return the new LwParameter
+ *
+ * @public
+ * @memberof LwParameter
+ */
 LwParameter *
 lw_parameter_new(const gchar *name, const gchar *value)
 {
@@ -40,6 +51,29 @@ lw_parameter_new(const gchar *name, const gchar *value)
   return parameter;
 }
 
+/**
+ * Adds a value to a LwParameter.
+ *
+ * @param parameter a LwParameter
+ * @param value the value to add
+ *
+ * @public
+ * @memberof LwParameter
+ */
+void
+lw_parameter_add_value(LwParameter *parameter, const gchar *value)
+{
+  parameter->values = g_list_append(parameter->values, (gpointer) value);
+}
+
+/**
+ * Frees the memory allocated for a LwParameter.
+ *
+ * @param parameter a LwParameter
+ *
+ * @public
+ * @memberof LwParameter
+ */
 void
 lw_parameter_free(LwParameter *parameter)
 {
@@ -51,6 +85,15 @@ lw_parameter_free(LwParameter *parameter)
     }
 }
 
+/**
+ * Returns a string representation of a LwParameter.
+ *
+ * @param parameter a LwParameter
+ * @return string representation of a LwParameter
+ *
+ * @public
+ * @memberof LwParameter
+ */
 GString *
 lw_parameter_to_string(LwParameter *parameter)
 {
@@ -65,32 +108,6 @@ lw_parameter_to_string(LwParameter *parameter)
     {
       temp_value = (gchar*) iterator->data;
       g_string_append_printf(result, "%s | ", temp_value);
-    }
-  return result;
-}
-
-GString *
-lw_parameter_to_GET(LwParameter *parameter)
-{
-  GString *result = NULL;
-  GList *iterator = NULL;
-  gchar *temp_value = NULL;
-
-  result = g_string_new(parameter->name);
-  g_string_append(result, "=");
-
-  for (iterator = parameter->values; iterator; iterator = g_list_next(iterator))
-    {
-      temp_value = (gchar*) iterator->data;
-      if (g_list_next(iterator) != NULL)
-        {
-          /* TODO: there are possible other separators*/
-          g_string_append_printf(result, "%s|", temp_value);
-        }
-      else
-        {
-          g_string_append(result, temp_value);
-        }
     }
   return result;
 }

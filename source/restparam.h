@@ -34,12 +34,12 @@ LwParameter *
 lw_parameter_new(const gchar *name, const gchar *value);
 
 void
+lw_parameter_add_value(LwParameter *parameter, const gchar* value);
+
+void
 lw_parameter_free(LwParameter *parameter);
 
 GString *
 lw_parameter_to_string(LwParameter *parameter);
-
-GString *
-lw_parameter_to_GET(LwParameter *parameter);
 
 #endif /* RESTPARAM_H */

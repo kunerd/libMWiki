@@ -35,7 +35,7 @@ set (SOURCE_FILES
 #    wpxml.c
 #    adapter.c
 #    error.c
-    rest.c
+#    rest.c
     restparam.c
 )
 
@@ -74,14 +74,14 @@ endif(DOXYGEN_FOUND)
 # used for linking into a shared library
 add_definitions(-fPIC)
 
-#add_library(libMWiki STATIC libMWiki.c ${SOURCE_FILES})
+add_library(libMWiki STATIC rest.c ${SOURCE_FILES})
 
-#target_link_libraries(
-#        wplookup
-#        ${GTK2_LIBRARIES}
-#        ${CURL_LIBRARIES}
-#       ${LIBXML2_LIBRARIES}
-#)
+target_link_libraries(
+        libMWiki
+        ${GTK2_LIBRARIES}
+        ${CURL_LIBRARIES}
+       ${LIBXML2_LIBRARIES}
+)
 
 if(UNIX)
     enable_testing()

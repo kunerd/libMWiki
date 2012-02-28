@@ -21,9 +21,10 @@
 
 add_executable(libMWiki_test testrest.c)
 set_target_properties(libMWiki_test PROPERTIES LINK_FLAGS -Wl,-lcunit)
-#target_link_libraries(
- #   libMWiki
-#)
+target_link_libraries(
+    libMWiki_test
+    libMWiki
+)
 
 add_test(libMWiki_test ${EXECUTABLE_OUTPUT_PATH}/libMWiki_test)
 

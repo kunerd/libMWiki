@@ -107,8 +107,7 @@ lw_rest_add_parameter_from_string(LwRestPtr rest, const gchar *name,
   temp_value = va_arg(param_list, gchar *);
   while (temp_value != NULL)
     {
-      parameter->values = g_list_append(parameter->values,
-          (gpointer) temp_value);
+      lw_rest_add_parameter(parameter, temp_value);
       temp_value = va_arg(param_list, gchar *);
     }
 
@@ -152,6 +151,41 @@ lw_rest_to_string(LwRestPtr rest)
 }
 
 /**
+ * Creates a GET request URI for the given LwParameter. Helpter method for lw_rest_create_GET_request().
+ *
+ * @param parameter
+ * @return
+ *
+ * @private
+ * @memberof LwRest
+ */
+GString *
+lw_rest_parameter_to_GET(LwParameter *parameter)
+{
+  GString *result = NULL;
+  GList *iterator = NULL;
+  gchar *temp_value = NULL;
+
+  result = g_string_new(parameter->name);
+  g_string_append(result, "=");
+
+  for (iterator = parameter->values; iterator; iterator = g_list_next(iterator))
+    {
+      temp_value = (gchar*) iterator->data;
+      if (g_list_next(iterator) != NULL)
+        {
+          /* TODO: there are possible other separators*/
+          g_string_append_printf(result, "%s|", temp_value);
+        }
+      else
+        {
+          g_string_append(result, temp_value);
+        }
+    }
+  return result;
+}
+
+/**
  * Creates a GET request URI for the given LwRest.
  *
  * @param rest a LwRest
@@ -175,7 +209,7 @@ lw_rest_create_GET_request(LwRestPtr rest)
   for (iterator = rest->params; iterator != NULL;
       iterator = g_list_next(iterator))
     {
-      temp_parameter_string = lw_parameter_to_GET(
+      temp_parameter_string = lw_rest_parameter_to_GET(
           (LwParameter *) iterator->data);
       if (g_list_next(iterator) != NULL)
         {
