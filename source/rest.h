@@ -50,4 +50,7 @@ lw_rest_to_string(LwRestPtr rest);
 gchar *
 lw_rest_create_GET_request(LwRestPtr rest);
 
-#endif /* ERROR_H */
+gchar *
+lw_rest_create_POST_fields(LwRestPtr rest);
+
+#endif

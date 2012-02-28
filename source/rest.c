@@ -107,7 +107,7 @@ lw_rest_add_parameter_from_string(LwRestPtr rest, const gchar *name,
   temp_value = va_arg(param_list, gchar *);
   while (temp_value != NULL)
     {
-      lw_rest_add_parameter(parameter, temp_value);
+      lw_parameter_add_value(parameter, temp_value);
       temp_value = va_arg(param_list, gchar *);
     }
 
@@ -159,7 +159,7 @@ lw_rest_to_string(LwRestPtr rest)
  * @private
  * @memberof LwRest
  */
-GString *
+char *
 lw_rest_parameter_to_GET(LwParameter *parameter)
 {
   GString *result = NULL;
@@ -182,7 +182,35 @@ lw_rest_parameter_to_GET(LwParameter *parameter)
           g_string_append(result, temp_value);
         }
     }
-  return result;
+  return g_string_free(result, FALSE);
+}
+
+gchar *
+lw_rest_create_parameter_request(LwRestPtr rest)
+{
+  GString *result = NULL;
+  GList *iterator = NULL;
+  gchar *temp_parameter_string = NULL;
+
+  result = g_string_new("");
+
+  for (iterator = rest->params; iterator != NULL;
+      iterator = g_list_next(iterator))
+    {
+      temp_parameter_string = lw_rest_parameter_to_GET(
+          (LwParameter *) iterator->data);
+      if (g_list_next(iterator) != NULL)
+        {
+          /* TODO: maybe there are other separators */
+          g_string_append_printf(result, "%s&", temp_parameter_string);
+        }
+      else
+        {
+          g_string_append(result, temp_parameter_string);
+        }
+      g_free(temp_parameter_string);
+    }
+  return g_string_free(result, FALSE);
 }
 
 /**
@@ -198,33 +226,27 @@ gchar *
 lw_rest_create_GET_request(LwRestPtr rest)
 {
   /* TODO: strip illegal characters from the result URI */
-  GString *result_string = NULL;
-  GList *iterator = NULL;
-  GString *temp_parameter_string = NULL;
+  GString *result = NULL;
+  gchar *request_parameter = NULL;
+
+  result = g_string_new(rest->url);
+  g_string_append(result, "?");
+
+  request_parameter = lw_rest_create_parameter_request(rest);
+  g_string_append(result, request_parameter);
+
+  g_free(request_parameter);
+
+  return g_string_free(result, FALSE);
+}
+
+gchar *
+lw_rest_create_POST_fields(LwRestPtr rest)
+{
+  /* TODO: strip illegal characters from the result URI */
   gchar *result = NULL;
+  result = lw_rest_create_parameter_request(rest);
 
-  result_string = g_string_new(rest->url);
-  g_string_append(result_string, "?");
-
-  for (iterator = rest->params; iterator != NULL;
-      iterator = g_list_next(iterator))
-    {
-      temp_parameter_string = lw_rest_parameter_to_GET(
-          (LwParameter *) iterator->data);
-      if (g_list_next(iterator) != NULL)
-        {
-          /* TODO: maybe there are other separators */
-          g_string_append_printf(result_string, "%s&",
-              temp_parameter_string->str);
-        }
-      else
-        {
-          g_string_append(result_string, temp_parameter_string->str);
-        }
-      g_string_free(temp_parameter_string, TRUE);
-    }
-  result = result_string->str;
-  g_string_free(result_string, FALSE);
   return result;
 }
 
