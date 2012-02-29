@@ -67,7 +67,7 @@ clean_suite1(void)
  * Create and destroy a LwRest-Object. For memory leak detections.
  */
 void
-test_LwRest_new_and_free()
+test_LwWebresource_get()
 {
   LwRest *rest = NULL;
 
@@ -225,7 +225,7 @@ main()
   /* add the tests to the suite */
   if ((NULL
       == CU_add_test(pSuite, "create and destroy a LwRest-Object",
-          test_LwRest_new_and_free))
+          test_LwWebresource_get))
       || (NULL
           == CU_add_test(pSuite, "free LwRest without parameters",
               test_LwRest_free_without_parameters))

@@ -19,13 +19,23 @@
 #  along with libMWiki.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+############### LwRest Test #######################################
+
 add_executable(libMWiki_test testrest.c)
 set_target_properties(libMWiki_test PROPERTIES LINK_FLAGS -Wl,-lcunit)
 target_link_libraries(
     libMWiki_test
     libMWiki
 )
-
 add_test(libMWiki_test ${EXECUTABLE_OUTPUT_PATH}/libMWiki_test)
 
-set(MEMORYCHECK_COMMAND:FILEPATH=/bin/usr/valgrind)
+
+############### LwWebresource Test #######################################
+
+add_executable(libMWiki_webresource webresource_test.c)
+set_target_properties(libMWiki_webresource PROPERTIES LINK_FLAGS -Wl,-lcunit)
+target_link_libraries(
+    libMWiki_webresource
+    libMWiki
+)
+add_test(libMWiki_webresource ${EXECUTABLE_OUTPUT_PATH}/libMWiki_webresource)

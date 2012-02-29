@@ -37,7 +37,7 @@ lw_webresource_new()
       return NULL;
     }
 
-  resource->raw_content = g_malloc(sizeof(gchar));
+  resource->raw_content = malloc(1);
   if (resource->raw_content == NULL)
     {
       /* TODO: log or error code */
@@ -51,24 +51,24 @@ lw_webresource_new()
 }
 
 size_t
-lw_webresource_curl_write_callback(LwWebresource *resource, size_t size, size_t nmemb,
+lw_webresource_curl_write_callback(void *ptr, size_t size, size_t nmemb,
     void *data)
 {
   /* TODO refactor for gchar usage */
   size_t realsize = size * nmemb;
-  struct MemoryStruct *mem = (struct MemoryStruct *) data;
+  LwWebresource *mem = (LwWebresource *) data;
 
-  resource->raw_content = realloc(resource->raw_content, resource->size + realsize + sizeof(gchar));
-  if (resource->raw_content == NULL)
+  mem->raw_content = realloc(mem->raw_content, mem->size + realsize + 1);
+  if (mem->raw_content == NULL)
     {
-      /* TODO log and error handling, out of memory! */
+      /* out of memory! */
       printf("not enough memory (realloc returned NULL)\n");
       exit(EXIT_FAILURE);
     }
 
-  memcpy(&(resource->raw_content[resource->size]), resource, realsize);
-  resource->size += realsize;
-  resource->raw_content[resource->size] = 0;
+  memcpy(&(mem->raw_content[mem->size]), ptr, realsize);
+  mem->size += realsize;
+  mem->raw_content[mem->size] = 0;
 
   return realsize;
 }
@@ -79,6 +79,7 @@ lw_webresource_get(LwRest *rest)
   /* TODO refactor, remove curl_global_init and cleanup */
   CURL *curl_handle = NULL;
   LwWebresource *resource = NULL;
+  gchar *get_url = NULL;
 
   resource = lw_webresource_new();
   if(resource == NULL)
@@ -86,19 +87,23 @@ lw_webresource_get(LwRest *rest)
       return NULL;
     }
 
+  get_url = lw_rest_create_GET_request(rest);
+
   curl_global_init(CURL_GLOBAL_ALL);
   curl_handle = curl_easy_init();
 
-  curl_easy_setopt(curl_handle, CURLOPT_URL, rest->url);
+  curl_easy_setopt(curl_handle, CURLOPT_URL, get_url);
   curl_easy_setopt(curl_handle, CURLOPT_WRITEFUNCTION,
       lw_webresource_curl_write_callback);
-  curl_easy_setopt(curl_handle, CURLOPT_WRITEDATA, (void *) &(resource));
+  curl_easy_setopt(curl_handle, CURLOPT_WRITEDATA, (void *) resource);
   curl_easy_setopt(curl_handle, CURLOPT_USERAGENT, rest->user_agent);
 
   curl_easy_perform(curl_handle);
   curl_easy_cleanup(curl_handle);
 
   curl_global_cleanup();
+
+  g_free(get_url);
 
   return resource;
 }
