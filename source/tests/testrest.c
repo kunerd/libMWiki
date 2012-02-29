@@ -1,23 +1,22 @@
 /*
- *  Wikipedia Lookup - A third-party Pidgin plug-in which offers
- *  you the possibility to look up received and typed words on Wikipedia.
+ *  libMWiki - A Mediawiki client library.
  *
  *  Copyright (C) 2011, 2012 Hendrik Kunert kunerd@users.sourceforge.net
  *
- *  This file is part of Wikipedia Lookup.
+ *  This file is part of libMWiki.
  *
- *  Wikipedia Lookup is free software: you can redistribute it and/or modify
+ *  libMWiki is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 3 of the License, or
  *  (at your option) any later version.
  *
- *  Wikipedia Lookup is distributed in the hope that it will be useful,
+ *  libMWiki is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with Wikipedia Lookup.  If not, see <http://www.gnu.org/licenses/>.
+ *  along with libMWiki.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <stdio.h>
@@ -70,7 +69,7 @@ clean_suite1(void)
 void
 test_LwRest_new_and_free()
 {
-  LwRestPtr rest = NULL;
+  LwRest *rest = NULL;
 
   rest = lw_rest_new("http://some.webservice.url.de");
   CU_ASSERT_PTR_NOT_NULL(rest);
@@ -81,7 +80,7 @@ test_LwRest_new_and_free()
 void
 test_LwRest_free_without_parameters()
 {
-  LwRestPtr rest = NULL;
+  LwRest *rest = NULL;
   LwParameter *parameter = NULL;
 
   rest = lw_rest_new("http://some.webservice.url.de");
@@ -97,7 +96,7 @@ test_LwRest_free_without_parameters()
 void
 test_LwRest_add_parameter_with_single_value()
 {
-  LwRestPtr rest = NULL;
+  LwRest *rest = NULL;
   LwParameter *parameter = NULL;
   gchar *request = NULL;
 
@@ -116,7 +115,7 @@ test_LwRest_add_parameter_with_single_value()
 void
 test_LwRest_add_parameter_from_string_with_single_value()
 {
-  LwRestPtr rest = NULL;
+  LwRest *rest = NULL;
   gchar *request = NULL;
 
   rest = lw_rest_new("http://webservice");
@@ -131,7 +130,7 @@ test_LwRest_add_parameter_from_string_with_single_value()
 void
 test_LwRest_add_parameter_from_string_with_multiple_values()
 {
-  LwRestPtr rest = NULL;
+  LwRest *rest = NULL;
   gchar *request = NULL;
 
   rest = lw_rest_new("http://webservice");
@@ -148,7 +147,7 @@ test_LwRest_add_parameter_from_string_with_multiple_values()
 void
 test_LwRest_add_multiple_parameters_from_string()
 {
-  LwRestPtr rest = NULL;
+  LwRest *rest = NULL;
   gchar *request = NULL;
 
   rest = lw_rest_new("http://webservice");
@@ -167,7 +166,7 @@ test_LwRest_add_multiple_parameters_from_string()
 void
 test_LwRest_create_POST_fields_with_single_parameter()
 {
-  LwRestPtr rest = NULL;
+  LwRest *rest = NULL;
   gchar *post_fields = NULL;
 
   rest = lw_rest_new("http://www.werbservice.de");
@@ -185,7 +184,7 @@ test_LwRest_create_POST_fields_with_single_parameter()
 void
 test_LwRest_create_POST_fields_with_multiple_parameter()
 {
-  LwRestPtr rest = NULL;
+  LwRest *rest = NULL;
   gchar *post_fields = NULL;
 
   rest = lw_rest_new("http://www.werbservice.de");

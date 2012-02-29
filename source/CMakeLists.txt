@@ -37,6 +37,7 @@ set (SOURCE_FILES
 #    error.c
 #    rest.c
     restparam.c
+    webresource.c
 )
 
 ################ Gtk2 install Check ####################

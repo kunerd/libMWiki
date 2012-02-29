@@ -24,16 +24,6 @@
 #include <stdlib.h>
 
 /**
- * The LwRest struct represents a Web service.
- */
-struct LwRest
-{
-  const gchar *url; /**< @private Web service base URL.*/
-  GList *params; /**< @private List of parameters for the Web service.*/
-
-};
-
-/**
  * Creates a new LwRest object for specified Web service URL.
  * The returned object should be freed with lw_rest_free() when no longer needed.
  *
@@ -43,12 +33,12 @@ struct LwRest
  * @public
  * @memberof LwRest
  */
-LwRestPtr
+LwRest *
 lw_rest_new(const gchar *service_url)
 {
   struct LwRest *rest = NULL;
 
-  rest = malloc(sizeof(struct LwRest));
+  rest = malloc(sizeof(LwRest));
   if (rest == NULL)
     {
       /* TODO: log or error code */
@@ -56,6 +46,7 @@ lw_rest_new(const gchar *service_url)
     }
 
   rest->url = service_url;
+  rest->user_agent = "Mozilla/4.0";
   rest->params = NULL;
 
   return rest;
@@ -73,7 +64,7 @@ lw_rest_new(const gchar *service_url)
  * @memberof LwRest
  */
 void
-lw_rest_add_parameter(LwRestPtr rest, LwParameter *parameter)
+lw_rest_add_parameter(LwRest *rest, LwParameter *parameter)
 {
   rest->params = g_list_append(rest->params, (gpointer) parameter);
 }
@@ -94,7 +85,7 @@ lw_rest_add_parameter(LwRestPtr rest, LwParameter *parameter)
  * @memberof LwRest
  */
 LwParameter *
-lw_rest_add_parameter_from_string(LwRestPtr rest, const gchar *name,
+lw_rest_add_parameter_from_string(LwRest *rest, const gchar *name,
     const gchar *value, ...)
 {
   va_list param_list;
@@ -128,7 +119,7 @@ lw_rest_add_parameter_from_string(LwRestPtr rest, const gchar *name,
  * @memberof LwRest
  */
 GString *
-lw_rest_to_string(LwRestPtr rest)
+lw_rest_to_string(LwRest *rest)
 {
   GString *result = NULL;
   GList *iterator = NULL;
@@ -186,7 +177,7 @@ lw_rest_parameter_to_GET(LwParameter *parameter)
 }
 
 gchar *
-lw_rest_create_parameter_request(LwRestPtr rest)
+lw_rest_create_parameter_request(LwRest *rest)
 {
   GString *result = NULL;
   GList *iterator = NULL;
@@ -223,7 +214,7 @@ lw_rest_create_parameter_request(LwRestPtr rest)
  * @memberof LwRest
  */
 gchar *
-lw_rest_create_GET_request(LwRestPtr rest)
+lw_rest_create_GET_request(LwRest *rest)
 {
   /* TODO: strip illegal characters from the result URI */
   GString *result = NULL;
@@ -241,7 +232,7 @@ lw_rest_create_GET_request(LwRestPtr rest)
 }
 
 gchar *
-lw_rest_create_POST_fields(LwRestPtr rest)
+lw_rest_create_POST_fields(LwRest *rest)
 {
   /* TODO: strip illegal characters from the result URI */
   gchar *result = NULL;
@@ -258,7 +249,7 @@ lw_rest_create_POST_fields(LwRestPtr rest)
  * @private
  * @memberof LwRest
  */
-lw_rest_free_helper(LwRestPtr *rest, gboolean with_parameters)
+lw_rest_free_helper(LwRest **rest, gboolean with_parameters)
 {
   if (rest != NULL && *rest != NULL)
     {
@@ -285,7 +276,7 @@ lw_rest_free_helper(LwRestPtr *rest, gboolean with_parameters)
  * @memberof LwRest
  */
 void
-lw_rest_free(LwRestPtr *rest)
+lw_rest_free(LwRest **rest)
 {
   lw_rest_free_helper(rest, TRUE);
 }
@@ -302,7 +293,7 @@ lw_rest_free(LwRestPtr *rest)
  * @memberof LwRest
  */
 void
-lw_rest_free_without_parameters(LwRestPtr *rest)
+lw_rest_free_without_parameters(LwRest **rest)
 {
   lw_rest_free_helper(rest, FALSE);
 }

@@ -19,47 +19,29 @@
  *  along with libMWiki.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBWIKI_REST_H
-#define LIBWIKI_REST_H
+#ifndef WEBRESOURCE_H
+#define WEBRESOURCE_H
 
-#include "restparam.h"
+#include "rest.h"
 
 #include <glib.h>
 
-/**
- * The LwRest struct represents a Web service.
- */
-typedef struct LwRest
+typedef struct
 {
-  const gchar *url; /**< @private Web service base URL.*/
-  const gchar *user_agent; /**< @private User Agent.*/
-  GList *params; /**< @private List of parameters for the Web service.*/
+  gchar *raw_content;
+  size_t size;
+} LwWebresource;
 
-}LwRest;
+LwWebresource *
+lw_webresource_new();
 
-LwRest *
-lw_rest_new(const gchar *service_url);
+LwWebresource *
+lw_webresource_get(LwRest *rest);
 
-void
-lw_rest_add_parameter(LwRest *rest, LwParameter *parameter);
-
-LwParameter *
-lw_rest_add_parameter_from_string(LwRest *rest, const gchar *name,
-    const gchar *value, ...);
-
-GString *
-lw_rest_to_string(LwRest *rest);
-
-gchar *
-lw_rest_create_GET_request(LwRest *rest);
-
-gchar *
-lw_rest_create_POST_fields(LwRest *rest);
+LwWebresource *
+lw_webresource_post(LwRest *rest);
 
 void
-lw_rest_free(LwRest **rest);
+lw_webresource_free(LwWebresource **resource);
 
-void
-lw_rest_free_without_parameters(LwRest **rest);
-
-#endif
+#endif /* WEBRESOURCE_H */
