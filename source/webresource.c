@@ -108,9 +108,42 @@ lw_webresource_get(LwRest *rest)
   return resource;
 }
 
-// implement that shit
-//LwWebresource *
-//lw_webresource_post(LwRestPtr rest);
+LwWebresource *
+lw_webresource_post(LwRest *rest)
+ {
+  /* TODO refactor, remove curl_global_init and cleanup */
+  CURL *curl_handle = NULL;
+  LwWebresource *resource = NULL;
+  gchar *post_fields = NULL;
+
+  resource = lw_webresource_new();
+  if(resource == NULL)
+    {
+      return NULL;
+    }
+
+  post_fields = lw_rest_create_POST_fields(rest);
+
+
+  curl_global_init(CURL_GLOBAL_ALL);
+  curl_handle = curl_easy_init();
+
+  curl_easy_setopt(curl_handle, CURLOPT_URL, rest->url);
+  curl_easy_setopt(curl_handle, CURLOPT_POSTFIELDS, post_fields);
+  curl_easy_setopt(curl_handle, CURLOPT_WRITEFUNCTION,
+      lw_webresource_curl_write_callback);
+  curl_easy_setopt(curl_handle, CURLOPT_WRITEDATA, (void *) resource);
+  curl_easy_setopt(curl_handle, CURLOPT_USERAGENT, rest->user_agent);
+
+  curl_easy_perform(curl_handle);
+  curl_easy_cleanup(curl_handle);
+
+  curl_global_cleanup();
+
+  g_free(post_fields);
+
+  return resource;
+ }
 
 void
 lw_webresource_free(LwWebresource **resource)

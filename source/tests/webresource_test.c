@@ -26,6 +26,27 @@
 #include "rest.h"
 #include "webresource.h"
 
+
+#define ENDPOINT_URL "http://en.wikipedia.org/w/api.php"
+#define ACTION_PARAM "action"
+#define ACTION_VALUE "parse"
+#define FORMAT_PARAM "format"
+#define FORMAT_VALUE "xml"
+#define TEXT_PARAM "text"
+#define TEXT_VALUE "test"
+
+#define EXPECTED_RESULT "<?xml version=\"1.0\"?><api><parse title=\"API\" displaytitle=\"API\"><text xml:space=\"preserve\">&lt;p&gt;test&lt;/p&gt;\n\
+\n\
+\n\
+&lt;!-- \n\
+NewPP limit report\n\
+Preprocessor node count: 1/1000000\n\
+Post-expand include size: 0/2048000 bytes\n\
+Template argument size: 0/2048000 bytes\n\
+Expensive parser function count: 0/500\n\
+--&gt;\n\
+</text><langlinks /><categories /><links /><templates /><images /><externallinks /><sections /></parse></api>"
+
 /* Pointer to the file used by the tests. */
 static FILE* temp_file = NULL;
 
@@ -83,11 +104,32 @@ test_LwWebresource_get()
   LwWebresource *resource = NULL;
 
   /* TODO don't make any change actions, because this is the real Wikipedia API */
-  rest = lw_rest_new("http://de.wikipedia.org/w/api.php");
-  lw_rest_add_parameter_from_string(rest, "action", "sitematrix", NULL);
-  lw_rest_add_parameter_from_string(rest, "format", "xml", NULL);
+  rest = lw_rest_new(ENDPOINT_URL);
+  lw_rest_add_parameter_from_string(rest, ACTION_PARAM, ACTION_VALUE, NULL);
+  lw_rest_add_parameter_from_string(rest, FORMAT_PARAM, FORMAT_VALUE, NULL);
+  lw_rest_add_parameter_from_string(rest, TEXT_PARAM, TEXT_VALUE, NULL);
 
   resource = lw_webresource_get(rest);
+  CU_ASSERT_STRING_EQUAL(resource->raw_content, EXPECTED_RESULT);
+
+  lw_webresource_free(&resource);
+  lw_rest_free(&rest);
+}
+
+void
+test_LwWebresource_post()
+{
+  LwRest *rest = NULL;
+  LwWebresource *resource = NULL;
+
+  /* TODO don't make any change actions, because this is the real Wikipedia API */
+  rest = lw_rest_new(ENDPOINT_URL);
+  lw_rest_add_parameter_from_string(rest, ACTION_PARAM, ACTION_VALUE, NULL);
+  lw_rest_add_parameter_from_string(rest, FORMAT_PARAM, FORMAT_VALUE, NULL);
+  lw_rest_add_parameter_from_string(rest, TEXT_PARAM, TEXT_VALUE, NULL);
+
+  resource = lw_webresource_post(rest);
+  CU_ASSERT_STRING_EQUAL(resource->raw_content, EXPECTED_RESULT);
 
   lw_webresource_free(&resource);
   lw_rest_free(&rest);
@@ -118,7 +160,8 @@ main()
   if ((NULL
       == CU_add_test(pSuite, "create and destroy LwWebresource object",
           test_LwWebresource_create_and_destroy))
-      || (NULL == CU_add_test(pSuite, "get request", test_LwWebresource_get)))
+      || (NULL == CU_add_test(pSuite, "get request", test_LwWebresource_get))
+      || (NULL == CU_add_test(pSuite, "post reuqest", test_LwWebresource_post)))
     {
       CU_cleanup_registry();
       return CU_get_error();
