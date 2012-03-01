@@ -103,7 +103,6 @@ test_LwWebresource_get()
   LwRest *rest = NULL;
   LwWebresource *resource = NULL;
 
-  /* TODO don't make any change actions, because this is the real Wikipedia API */
   rest = lw_rest_new(ENDPOINT_URL);
   lw_rest_add_parameter_from_string(rest, ACTION_PARAM, ACTION_VALUE, NULL);
   lw_rest_add_parameter_from_string(rest, FORMAT_PARAM, FORMAT_VALUE, NULL);
@@ -122,7 +121,6 @@ test_LwWebresource_post()
   LwRest *rest = NULL;
   LwWebresource *resource = NULL;
 
-  /* TODO don't make any change actions, because this is the real Wikipedia API */
   rest = lw_rest_new(ENDPOINT_URL);
   lw_rest_add_parameter_from_string(rest, ACTION_PARAM, ACTION_VALUE, NULL);
   lw_rest_add_parameter_from_string(rest, FORMAT_PARAM, FORMAT_VALUE, NULL);

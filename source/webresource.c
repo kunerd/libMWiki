@@ -25,6 +25,11 @@
 #include <string.h>
 #include <curl/curl.h>
 
+typedef enum
+{
+  POST_REQUEST, GET_REQUEST
+} LwRequestType;
+
 LwWebresource *
 lw_webresource_new()
 {
@@ -74,62 +79,45 @@ lw_webresource_curl_write_callback(void *ptr, size_t size, size_t nmemb,
 }
 
 LwWebresource *
-lw_webresource_get(LwRest *rest)
+lw_webresource_request(LwRest *rest, LwRequestType type)
 {
-  /* TODO refactor, remove curl_global_init and cleanup */
-  CURL *curl_handle = NULL;
-  LwWebresource *resource = NULL;
-  gchar *get_url = NULL;
-
-  resource = lw_webresource_new();
-  if(resource == NULL)
-    {
-      return NULL;
-    }
-
-  get_url = lw_rest_create_GET_request(rest);
-
-  curl_global_init(CURL_GLOBAL_ALL);
-  curl_handle = curl_easy_init();
-
-  curl_easy_setopt(curl_handle, CURLOPT_URL, get_url);
-  curl_easy_setopt(curl_handle, CURLOPT_WRITEFUNCTION,
-      lw_webresource_curl_write_callback);
-  curl_easy_setopt(curl_handle, CURLOPT_WRITEDATA, (void *) resource);
-  curl_easy_setopt(curl_handle, CURLOPT_USERAGENT, rest->user_agent);
-
-  curl_easy_perform(curl_handle);
-  curl_easy_cleanup(curl_handle);
-
-  curl_global_cleanup();
-
-  g_free(get_url);
-
-  return resource;
-}
-
-LwWebresource *
-lw_webresource_post(LwRest *rest)
- {
-  /* TODO refactor, remove curl_global_init and cleanup */
   CURL *curl_handle = NULL;
   LwWebresource *resource = NULL;
   gchar *post_fields = NULL;
+  gchar *get_url = NULL;
+
+  /* TODO remove curl_global_init and cleanup here */
+  curl_handle = curl_easy_init();
+  curl_global_init(CURL_GLOBAL_ALL);
 
   resource = lw_webresource_new();
-  if(resource == NULL)
+  if (resource == NULL)
     {
       return NULL;
     }
 
-  post_fields = lw_rest_create_POST_fields(rest);
+  switch (type)
+    {
 
+  case POST_REQUEST:
+    {
+      post_fields = lw_rest_create_POST_fields(rest);
+      curl_easy_setopt(curl_handle, CURLOPT_URL, rest->url);
+      curl_easy_setopt(curl_handle, CURLOPT_POSTFIELDS, post_fields);
+    }
+    break;
 
-  curl_global_init(CURL_GLOBAL_ALL);
-  curl_handle = curl_easy_init();
+  case GET_REQUEST:
+    {
+      get_url = lw_rest_create_GET_request(rest);
+      curl_easy_setopt(curl_handle, CURLOPT_URL, get_url);
+    }
+    break;
 
-  curl_easy_setopt(curl_handle, CURLOPT_URL, rest->url);
-  curl_easy_setopt(curl_handle, CURLOPT_POSTFIELDS, post_fields);
+  default:
+    return NULL;
+    }
+
   curl_easy_setopt(curl_handle, CURLOPT_WRITEFUNCTION,
       lw_webresource_curl_write_callback);
   curl_easy_setopt(curl_handle, CURLOPT_WRITEDATA, (void *) resource);
@@ -141,9 +129,22 @@ lw_webresource_post(LwRest *rest)
   curl_global_cleanup();
 
   g_free(post_fields);
+  g_free(get_url);
 
   return resource;
- }
+}
+
+LwWebresource *
+lw_webresource_get(LwRest *rest)
+{
+  return lw_webresource_request(rest, GET_REQUEST);
+}
+
+LwWebresource *
+lw_webresource_post(LwRest *rest)
+{
+  return lw_webresource_request(rest, POST_REQUEST);
+}
 
 void
 lw_webresource_free(LwWebresource **resource)
