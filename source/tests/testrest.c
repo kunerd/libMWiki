@@ -170,8 +170,8 @@ test_LwRest_create_POST_fields_with_single_parameter()
   gchar *post_fields = NULL;
 
   rest = lw_rest_new("http://www.werbservice.de");
-  lw_rest_add_parameter_from_string(rest, "parameter1", "value1",
-      "value2", NULL);
+  lw_rest_add_parameter_from_string(rest, "parameter1", "value1", "value2",
+      NULL);
 
   post_fields = lw_rest_create_POST_fields(rest);
 
@@ -188,14 +188,44 @@ test_LwRest_create_POST_fields_with_multiple_parameter()
   gchar *post_fields = NULL;
 
   rest = lw_rest_new("http://www.werbservice.de");
-  lw_rest_add_parameter_from_string(rest, "parameter1", "value1",
-      "value2", NULL);
-  lw_rest_add_parameter_from_string(rest, "parameter2", "value1",
-      "value2", NULL);
+  lw_rest_add_parameter_from_string(rest, "parameter1", "value1", "value2",
+      NULL);
+  lw_rest_add_parameter_from_string(rest, "parameter2", "value1", "value2",
+      NULL);
   post_fields = lw_rest_create_POST_fields(rest);
 
   CU_ASSERT_STRING_EQUAL(post_fields,
       "parameter1=value1|value2&parameter2=value1|value2");
+
+  g_free(post_fields);
+  lw_rest_free(&rest);
+}
+
+void
+test_LwRest_create_GET_request_without_parameter()
+{
+  LwRest *rest = NULL;
+  gchar *get_request = NULL;
+
+  rest = lw_rest_new("http://www.webservice.de");
+  get_request = lw_rest_create_GET_request(rest);
+
+  CU_ASSERT_STRING_EQUAL(get_request, "http://www.webservice.de");
+
+  g_free(get_request);
+  lw_rest_free(&rest);
+}
+
+void
+test_LwRest_create_POST_fields_without_parameter()
+{
+  LwRest *rest = NULL;
+  gchar *post_fields;
+
+  rest = lw_rest_new("http://www.webservice.de");
+  post_fields = lw_rest_create_POST_fields(rest);
+
+  CU_ASSERT_STRING_EQUAL(post_fields, "");
 
   g_free(post_fields);
   lw_rest_free(&rest);
@@ -246,7 +276,14 @@ main()
           == CU_add_test(pSuite, "create POST fields with single parameter",
               test_LwRest_create_POST_fields_with_single_parameter))
       || (NULL
-          == CU_add_test(pSuite, "create POST fields with multiple parameters", test_LwRest_create_POST_fields_with_multiple_parameter)))
+          == CU_add_test(pSuite, "create POST fields with multiple parameter",
+              test_LwRest_create_POST_fields_with_multiple_parameter))
+      || (NULL
+          == CU_add_test(pSuite, "create GET request without parameters",
+              test_LwRest_create_GET_request_without_parameter))
+      || (NULL
+          == CU_add_test(pSuite, "create POST fields without parameter",
+              test_LwRest_create_POST_fields_without_parameter)))
     {
       CU_cleanup_registry();
       return CU_get_error();

@@ -221,13 +221,15 @@ lw_rest_create_GET_request(LwRest *rest)
   gchar *request_parameter = NULL;
 
   result = g_string_new(rest->url);
-  g_string_append(result, "?");
+  if (rest->params != NULL)
+    {
+      g_string_append(result, "?");
 
-  request_parameter = lw_rest_create_parameter_request(rest);
-  g_string_append(result, request_parameter);
+      request_parameter = lw_rest_create_parameter_request(rest);
+      g_string_append(result, request_parameter);
 
-  g_free(request_parameter);
-
+      g_free(request_parameter);
+    }
   return g_string_free(result, FALSE);
 }
 
