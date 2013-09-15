@@ -25,9 +25,11 @@ cmake_minimum_required(VERSION 2.6 FATAL_ERROR)
 include_directories(${PROJECT_SOURCE_DIR})
 include_directories(${PROJECT_BINARY_DIR})
 
-set (wplookup_VERSION_MAJOR 0)
-set (wplookup_VERSION_MINOR 0)
-set (wplookup_VERSION_PATCH 1)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
+
+set (libMWiki_VERSION_MAJOR 0)
+set (libMWiki_VERSION_MINOR 0)
+set (libMWiki_VERSION_PATCH 1)
 
 set (SOURCE_FILES
 #    wparticle.c
@@ -40,12 +42,12 @@ set (SOURCE_FILES
     webresource.c
 )
 
-################ Gtk2 install Check ####################
-find_package(GTK2 REQUIRED)
-if (GTK2_FOUND)
-        add_definitions(${GTK2_DEFINITIONS})
-        include_directories(${GTK2_INCLUDE_DIRS})
-endif (GTK2_FOUND)
+################ GLIB2 install Check ####################
+find_package(GLIB2 REQUIRED)
+if (GLIB2_FOUND)
+        add_definitions(${GLIB2_DEFINITIONS})
+        include_directories(${GLIB2_INCLUDE_DIRS})
+endif (GLIB2_FOUND)
 
 ################ LIBXML2 install Check ####################
 find_package(LibXml2 REQUIRED)
@@ -78,13 +80,22 @@ add_definitions(-fPIC)
 add_library(libMWiki STATIC rest.c ${SOURCE_FILES})
 
 target_link_libraries(
-        libMWiki
-        ${GTK2_LIBRARIES}
-        ${CURL_LIBRARIES}
-       ${LIBXML2_LIBRARIES}
+    libMWiki
+    ${GLIB2_LIBRARIES}
+    ${CURL_LIBRARIES}
+    ${LIBXML2_LIBRARIES}
 )
 
-if(UNIX)
-    enable_testing()
-    add_subdirectory(tests)
-endif(UNIX)
+# Tests ####################
+################ Check install check ####################
+find_package(CUnit REQUIRED)
+if (CUNIT_FOUND)
+    if(UNIX)
+        add_definitions(${CUNIT_DEFINITIONS})
+        include_directories(${CUNIT_INCLUDE_DIRS})
+        enable_testing()
+        add_subdirectory(tests)
+    endif(UNIX)
+endif (CUNIT_FOUND)
+
+
