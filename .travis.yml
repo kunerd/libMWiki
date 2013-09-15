@@ -1,6 +1,7 @@
 language: c
 before_install:
  - sudo apt-get install libcunit1
+ - sudo apt-get install libcunit1-dev
 compiler:
   - gcc
 # Change this to your needs
