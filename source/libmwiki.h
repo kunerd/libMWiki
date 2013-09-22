@@ -19,29 +19,26 @@
  *  along with libMWiki.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef WEBRESOURCE_H
-#define WEBRESOURCE_H
-
-#include "rest.h"
+#ifndef LIBWIKI_H
+#define LIBWIKI_H
 
 #include <glib.h>
 
-typedef struct
-{
-  gchar *raw_content;
-  size_t size;
-} LwWebresource;
+typedef struct LwMediaWiki LwMediaWiki;
 
-LwWebresource *
-lw_webresource_new();
+/**
+ * The LwWiki struct represents a Mediwiki service enpoint.
+ */
+struct LwMediaWiki {
+	const gchar *api_url; /**< @private API service URL.*/
+	const gchar *user_agent; /**< @private User Agent.*/
+};
 
-void
-lw_webresource_get(LwWebresource *resource, LwRest *rest);
+extern LwMediaWiki*
+lw_mediawiki_new(const gchar *api_url);
 
-void
-lw_webresource_post(LwWebresource *resource, LwRest *rest);
+extern void
+lw_mediawiki_free(LwMediaWiki *mw);
 
-void
-lw_webresource_free(LwWebresource **resource);
 
-#endif /* WEBRESOURCE_H */
+#endif

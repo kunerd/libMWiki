@@ -19,23 +19,42 @@
 #  along with libMWiki.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-############### LwRest Test #######################################
 
-add_executable(libMWiki_test testrest.c)
-target_link_libraries(
-    libMWiki_test
-    libMWiki
-    ${CUNIT_LIBRARIES}
-)
-add_test(libMWiki_test ${EXECUTABLE_OUTPUT_PATH}/libMWiki_test)
+################ GLIB2 install Check ####################
+find_package(Check)
+if (CHECK_FOUND)
+    add_definitions(${CHECK_DEFINITIONS})
+    include_directories(${CHECK_INCLUDE_DIRS})
+    
+    ############### LwRest Test #######################################
+    add_executable(LwRest_test testrest.c)
+    target_link_libraries(
+        LwRest_test
+        mwiki
+        ${CHECK_LIBRARIES}
+    )
+    add_test(LwRest_test ${EXECUTABLE_OUTPUT_PATH}/LwRest_test)
+    
+    ############### LwMediawiki Test #######################################
+    
+    add_executable(LwMediawiki_test test_libmwiki.c)
+    target_link_libraries(
+        LwMediawiki_test
+        mwiki
+        ${CHECK_LIBRARIES}
+    )
+    add_test(LwMediawiki_test ${EXECUTABLE_OUTPUT_PATH}/LwMediawiki_test)
+    
+    
+    ############### LwWebresource Test #######################################
+    
+    add_executable(LwWebresource_test webresource_test.c)
+    target_link_libraries(
+        LwWebresource_test
+        mwiki
+        ${CHECK_LIBRARIES}
+    )
+    add_test(LwWebresource_test ${EXECUTABLE_OUTPUT_PATH}/LwWebresource_test)
+    
+endif (CHECK_FOUND)
 
-
-############### LwWebresource Test #######################################
-
-#add_executable(libMWiki_webresource webresource_test.c)
-#set_target_properties(libMWiki_webresource PROPERTIES LINK_FLAGS -Wl,-lcunit)
-#target_link_libraries(
-#    libMWiki_webresource
-#    libMWiki
-#)
-#add_test(libMWiki_webresource ${EXECUTABLE_OUTPUT_PATH}/libMWiki_webresource)

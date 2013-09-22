@@ -78,22 +78,23 @@ lw_webresource_curl_write_callback(void *ptr, size_t size, size_t nmemb,
   return realsize;
 }
 
-LwWebresource *
-lw_webresource_request(LwRest *rest, LwRequestType type)
+void
+lw_webresource_request(LwWebresource *resource, LwRest *rest, LwRequestType type)
 {
   CURL *curl_handle = NULL;
-  LwWebresource *resource = NULL;
   gchar *post_fields = NULL;
   gchar *get_url = NULL;
 
   /* TODO remove curl_global_init and cleanup here */
-  curl_handle = curl_easy_init();
   curl_global_init(CURL_GLOBAL_ALL);
+
+  curl_handle = curl_easy_init();
 
   resource = lw_webresource_new();
   if (resource == NULL)
     {
-      return NULL;
+	  /* FIXME error handling */
+      return;
     }
 
   switch (type)
@@ -115,7 +116,8 @@ lw_webresource_request(LwRest *rest, LwRequestType type)
     break;
 
   default:
-    return NULL;
+	  /* FIXME error handling */
+    return;
     }
 
   curl_easy_setopt(curl_handle, CURLOPT_WRITEFUNCTION,
@@ -131,19 +133,18 @@ lw_webresource_request(LwRest *rest, LwRequestType type)
   g_free(post_fields);
   g_free(get_url);
 
-  return resource;
 }
 
-LwWebresource *
-lw_webresource_get(LwRest *rest)
+void
+lw_webresource_get(LwWebresource *resource, LwRest *rest)
 {
-  return lw_webresource_request(rest, GET_REQUEST);
+  lw_webresource_request(resource, rest, GET_REQUEST);
 }
 
-LwWebresource *
-lw_webresource_post(LwRest *rest)
+void
+lw_webresource_post(LwWebresource *resource, LwRest *rest)
 {
-  return lw_webresource_request(rest, POST_REQUEST);
+  lw_webresource_request(resource, rest, POST_REQUEST);
 }
 
 void

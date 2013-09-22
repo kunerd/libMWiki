@@ -32,12 +32,7 @@ set (libMWiki_VERSION_MINOR 0)
 set (libMWiki_VERSION_PATCH 1)
 
 set (SOURCE_FILES
-#    wparticle.c
-#    wpopensearch.c
-#    wpxml.c
-#    adapter.c
-#    error.c
-#    rest.c
+    rest.c
     restparam.c
     webresource.c
 )
@@ -74,28 +69,17 @@ if(DOXYGEN_FOUND)
 )
 endif(DOXYGEN_FOUND)
 
-# used for linking into a shared library
-add_definitions(-fPIC)
-
-add_library(libMWiki STATIC rest.c ${SOURCE_FILES})
+add_library(mwiki SHARED libmwiki.c ${SOURCE_FILES})
 
 target_link_libraries(
-    libMWiki
+    mwiki
     ${GLIB2_LIBRARIES}
     ${CURL_LIBRARIES}
     ${LIBXML2_LIBRARIES}
 )
 
 # Tests ####################
-################ Check install check ####################
-find_package(CUnit REQUIRED)
-if (CUNIT_FOUND)
-    if(UNIX)
-        add_definitions(${CUNIT_DEFINITIONS})
-        include_directories(${CUNIT_INCLUDE_DIRS})
-        enable_testing()
-        add_subdirectory(tests)
-    endif(UNIX)
-endif (CUNIT_FOUND)
+enable_testing()
+add_subdirectory(tests)
 
 

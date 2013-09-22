@@ -23,33 +23,41 @@
 #include <string.h>
 
 #include <check.h>
-#include "rest.h"
-#include "webresource.h"
+#include "libmwiki.h"
 
-#define ENDPOINT_URL "http://en.wikipedia.org/w/api.php"
-#define ACTION_PARAM "action"
-#define ACTION_VALUE "parse"
-#define FORMAT_PARAM "format"
-#define FORMAT_VALUE "xml"
-#define TEXT_PARAM "text"
-#define TEXT_VALUE "test"
+#define USER_AGENT "libMWiki/1.1 (https://github.com/kunerd/libMWiki; qkunerd@gmail.com)"
+#define API_URL "http://some.webservice.url.de"
 
-START_TEST (test_LwWebresource_create_and_destroy)
+/*
+ * Create and destroy a LwMediawiki-Object. For memory leak detections.
+ */START_TEST (test_LwMediaWiki_create)
 	{
-		LwWebresource *resource = NULL;
+		LwMediaWiki *mw = NULL;
 
-		resource = lw_webresource_new();
-		ck_assert(resource != NULL);
+		mw = lw_mediawiki_new(API_URL);
+		ck_assert(mw != NULL);
+		lw_mediawiki_free(mw);
+	}END_TEST
 
-		lw_webresource_free(&resource);
-		ck_assert(resource == NULL);
+/*
+ * Check default values.
+ */START_TEST (test_LwMediaWiki_defaults)
+	{
+		LwMediaWiki *mw = NULL;
+
+		mw = lw_mediawiki_new(API_URL);
+		ck_assert_str_eq(mw->api_url, API_URL);
+		ck_assert_str_eq(mw->user_agent, USER_AGENT);
+
+		lw_mediawiki_free(mw);
 	}END_TEST
 
 Suite* lw_rest_suite(void) {
-	Suite *suite = suite_create("LwWebresource");
+	Suite *suite = suite_create("LwMediaWiki");
 
-	TCase *tcase = tcase_create("LwWebresource");
-	tcase_add_test(tcase, test_LwWebresource_create_and_destroy);
+	TCase *tcase = tcase_create("LwMediaWiki");
+	tcase_add_test(tcase, test_LwMediaWiki_create);
+	tcase_add_test(tcase, test_LwMediaWiki_defaults);
 
 	suite_add_tcase(suite, tcase);
 	return suite;
@@ -64,4 +72,3 @@ int main(int argc, char *argv[]) {
 	srunner_free(runner);
 	return number_failed;
 }
-
